@@ -38,12 +38,24 @@ void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
 
 }
 
+void  *Channel::onRead(void *args) {
+    ChannelMsg *msg = (ChannelMsg *)(args);
+    Channel::onRead(msg->fd, msg->dispatcher);
+}
+
+void  *Channel::onWrite(void *args) {
+    ChannelMsg *msg = (ChannelMsg *)(args);
+    Channel::onWrite(msg->fd, msg->dispatcher);
+}
+
+
 void  Channel::onClose(int fd, EventDispatcher *dispatcher) {
+    dispatcher->removeConsumer(fd, false);
+
     mapMutex.lock();
     channelMap.erase(fd);
     mapMutex.unlock();
 
-    dispatcher->removeConsumer(fd);
     int close_ret = close(fd);
     if (close_ret <  0) {
         // tc_error

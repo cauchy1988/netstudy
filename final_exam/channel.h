@@ -1,9 +1,17 @@
+#ifndef NET_STUDY_CHANNEL
+#define NET_STUDY_CHANNEL
+
 #include<shared_ptr>
 #include<mutex>
 #include<atomic>
 
 #include "buffer.h"
 #include "event_dispatcher.h"
+
+struct ChannelMsg {
+    int fd;
+    EventDispatcher *dispatcher;
+};
 
 class Channel {
 public:
@@ -15,6 +23,9 @@ public:
     static void onWrite(int fd, EventDispatcher *dispatcher);
     static void onClose(int fd, EventDispatcher *dispatcher);
 
+    static void *onRead(void  *args);
+    static void *onWrite(void *args);
+
 private:
     int fd;
     Buffer readBuf;
@@ -25,3 +36,5 @@ private:
     static std::mutex mapMutex;
     static std::unordered_map<int, shared_ptr<Channel>> channelMap;
 };
+
+#endif
