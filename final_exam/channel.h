@@ -18,7 +18,7 @@ struct ChannelMsg {
 
 class Channel {
 public:
-    Channel(int fd, bool b_listen = false) : bListen(b_listen), nLimit(0) {}
+    Channel(int fd, bool b_listen = false) : bListen(b_listen), nReadLimit(0), nSendLimit(0) {}
 
 public:
     static void onConnect(int fd, EventDispatcher *dispatcher);
@@ -34,7 +34,8 @@ private:
     Buffer readBuf;
     Buffer sendBuf;
     bool bListen;
-    std::atomic<int> nLimit;
+    std::atomic<int> nReadLimit;
+    std::atomic<int> nSendLimit;
 
     static std::mutex mapMutex;
     static std::unordered_map<int, shared_ptr<Channel>> channelMap;

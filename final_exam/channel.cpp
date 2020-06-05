@@ -31,10 +31,42 @@ void  Channel::onConnect(int fd, EventDispatcher *dispatcher) {
 }
 
 void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
+    mapMutex.lock();
+    auto find_iter = channelMap.find(fd);
+    if (find_iter == channelMap.end()) {
+        mapMutex.unlock();
+        onClose(fd, dispatcher);
 
+        //tc_error
+        return;
+    }
+    auto channel_ptr = find_iter->second;
+    mapMutex.unlock();
+
+    if (channel_ptr->nReadLimit.fetch_add(1, std::memory_order_relaxed) == 0) {
+        if (channel_ptr->bListen) {
+            onConnect(fd,  dispatcher);
+        } else {
+
+        }
+
+        channel_ptr->nReadLimit.store(0, std::memory_order_relaxed);
+    }
 }
 
 void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
+
+    mapMutex.lock();
+    auto find_iter = channelMap.find(fd);
+    if (find_iter == channelMap.end()) {
+        mapMutex.unlock();
+        onClose(fd, dispatcher);
+
+        //tc_error
+        return;
+    }
+    auto channel_ptr = find_iter->second;
+    mapMutex.unlock();
 
 }
 
