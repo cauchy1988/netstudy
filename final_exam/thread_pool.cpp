@@ -20,7 +20,7 @@ void *ThreadPool::run(void *args) {
     ThreadPoolMsg one_msg;
     while (!pool->bStop) {
         int pop_ret = pool->popTask(one_msg);
-        if (pop_ret) {
+        if (pop_ret < 0) {
             continue;
         }
 
