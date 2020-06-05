@@ -11,6 +11,9 @@
 struct ChannelMsg {
     int fd;
     EventDispatcher *dispatcher;
+
+    ChannelMsg() {}
+    ChannelMsg(int _fd, EventDispatcher *_dispatcher) : fd(_fd), dispatcher(_dispatcher) {}
 };
 
 class Channel {

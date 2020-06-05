@@ -1,11 +1,13 @@
 #ifndef NET_STUDY_EVENT_DISPATCHER
 #define NET_STUDY_EVENT_DISPATCHER
 
+#include "thread_pool.h"
+
 #include <pthread.h>
 
 class EventDispatcher {
     public:
-        EventDispatcher();
+        EventDispatcher(ThreadPool  *_threadPool);
 
         int addConsumer(int fd);
         int removeConsumer(int fd);
@@ -18,6 +20,7 @@ class EventDispatcher {
         int epollFd;
         volatile bool bStop;
         pthread_t tid;
+        ThreadPool *threadPool;
 };
 
 #endif

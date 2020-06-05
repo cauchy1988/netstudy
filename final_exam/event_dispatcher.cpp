@@ -9,7 +9,10 @@
 
 const int MAX_EVENT_NUM = 1024;
 
-EventDispatcher::EventDispatcher() {
+EventDispatcher::EventDispatcher(ThreadPool  *_threadPool) {
+    assert(_threadPool);
+    this->threadPool = _threadPool;
+
     epollFd = epoll_create(1);
     if (epollFd < 0) {
         //tc_error
@@ -83,7 +86,12 @@ void  *EventDispatcher::run(void *args) {
             if (one_ev.events & EPOLLIN) {
                 //Channel::onRead(one_ev.data.fd, pDispatcher);
                 //add to thread pool
+                struct ChannelMsg  *channelMsg = new ChannelMsg(one_ev.data.fd, pDispatcher);
+                struct ThreadPoolMsg poolMsg;
+                poolMsg.funcPtr = Channel::onRead;
+                poolMsg.args = (void *)(channelMsg);
 
+                threadPool->pushTask(poolMsg);
             } else if (one_ev.events & (EPOLLHUP | EPOLLERR)) {
                 Channel::onClose(one_ev.data.fd, pDispatcher);
                 int close_ret = close(one_ev.data.fd);
@@ -97,7 +105,12 @@ void  *EventDispatcher::run(void *args) {
             } else if (one_ev.events & EPOLLOUT) {
                 //Channel::onWrite(one_ev.data.fd, pDispatcher);
                 //add to thread pool
+                struct ChannelMsg  *channelMsg = new ChannelMsg(one_ev.data.fd, pDispatcher);
+                struct ThreadPoolMsg poolMsg;
+                poolMsg.funcPtr = Channel::onWrite;
+                poolMsg.args = (void *)(channelMsg);
 
+                threadPool->pushTask(poolMsg);
             } else {
                 //tc_error
             }

@@ -43,7 +43,6 @@ class ThreadPool {
         pthread_mutex_t  queueMutex;
         pthread_cond_t emptyCond;
         pthread_cond_t fullCond;
-
 };
 
 #endif

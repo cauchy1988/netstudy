@@ -41,11 +41,13 @@ void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
 void  *Channel::onRead(void *args) {
     ChannelMsg *msg = (ChannelMsg *)(args);
     Channel::onRead(msg->fd, msg->dispatcher);
+    delete msg;
 }
 
 void  *Channel::onWrite(void *args) {
     ChannelMsg *msg = (ChannelMsg *)(args);
     Channel::onWrite(msg->fd, msg->dispatcher);
+    delete msg;
 }
 
 
