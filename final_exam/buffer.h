@@ -37,6 +37,11 @@ class Buffer {
        char *front() {
            return &buf[front];
        }
+
+       int readFromBuffer(char *_buf, int len, bool bChange = false);
+
+       int writeToBuffer(char *_buf, int len);
+
     private:
        char *buf;
        int capacity;
