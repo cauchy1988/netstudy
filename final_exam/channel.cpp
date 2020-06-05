@@ -55,7 +55,6 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
 }
 
 void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
-
     mapMutex.lock();
     auto find_iter = channelMap.find(fd);
     if (find_iter == channelMap.end()) {
@@ -68,6 +67,9 @@ void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
     auto channel_ptr = find_iter->second;
     mapMutex.unlock();
 
+    if (channel_ptr->nWriteLimit.fetch_add(1, std::memory_order_relaxed) == 0) {
+        channel_ptr->nWriteLimit.store(0, std::memory_order_relaxed);
+    }
 }
 
 void  *Channel::onRead(void *args) {
