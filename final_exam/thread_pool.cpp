@@ -30,21 +30,36 @@ void *ThreadPool::run(void *args) {
 
 
 int ThreadPool::pushTask(const ThreadPoolMsg &task) {
-    bool isEmpty;
+    bool isEmpty = false;
+
     pthread_mutex_lock(&queueMutex);
     isEmpty = blockQueue.empty();
+
+    while (blockQueue.size() >= maxQueueSize) {
+        if(pthread_cond_wait(&fullCond, &queueMutex)) {
+            pthread_mutex_unlock(&queueMutex);
+            //tc_error
+            return -1;
+        }
+    }
+
     blockQueue.push(task);
     pthread_mutex_unlock(&queueMutex);
     if (isEmpty) {
-        pthread_cond_broadcast(&this->queueCond);
+        pthread_cond_broadcast(&this->emptyCond);
     }
+
+    return 0;
 }
 
 int ThreadPool::popTask(ThreadPoolMsg &task) {
+    bool isFull = false;
+
     pthread_mutex_lock(&queueMutex);
+    isFull = blockQueue.size() >= maxQueueSize;
 
     while(blockQueue.empty()) {
-        if(pthread_cond_wait(&queueCond, &queueMutex)) {
+        if(pthread_cond_wait(&emptyCond, &queueMutex)) {
             pthread_mutex_unlock(&queueMutex);
             //tc_error
             return -1;
@@ -54,6 +69,9 @@ int ThreadPool::popTask(ThreadPoolMsg &task) {
     task = blockQueue.front();
     blockQueue.pop();
     pthread_mutex_unlock(&queueMutex);
+    if (isFull) {
+        pthread_cond_broadcast(&this->fullCond);
+    }
 
     return 0;
 }
