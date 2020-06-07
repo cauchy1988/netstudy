@@ -7,22 +7,26 @@ class Buffer {
            buf = new char[_capacity + 1];
            assert(buf);
 
-           front = rear = 0;
+           frontIdx = rearIdx = 0;
+       }
+
+       Buffer() {
+           Buffer(2048);
        }
 
        bool full() {
-           return (rear + 1) % (capacity + 1) == front;
+           return (rearIdx + 1) % (capacity + 1) == frontIdx;
        }
 
        bool empty() {
-           return rear == front;
+           return rearIdx == frontIdx;
        }
 
        int size() {
-           if (front <= rear) {
-               return rear - front;
+           if (frontIdx <= rearIdx) {
+               return rearIdx - frontIdx;
            } else {
-               return (rear + 1) + (capacity + 1 - front);
+               return (rearIdx) + (capacity + 1 - frontIdx);
            }
        }
 
@@ -31,11 +35,27 @@ class Buffer {
        }
 
        char *rear() {
-           return &buf[rear];
+           return &buf[rearIdx];
        }
 
        char *front() {
-           return &buf[front];
+           return &buf[frontIdx];
+       }
+
+       int preSize() {
+           if (rearIdx < frontIdx) {
+               return capacity + 1 - frontIdx;
+           }
+
+           return -1;
+       }
+
+       int suffixSize() {
+           if (rearIdx < frontIdx) {
+               return rearIdx;
+           }
+
+           return -1;
        }
 
        int readFromBuffer(char *_buf, int len, bool bChange = false);
@@ -46,8 +66,8 @@ class Buffer {
        char *buf;
        int capacity;
 
-       int front;
-       int rear;
+       int frontIdx;
+       int rearIdx;
 };
 
 #endif

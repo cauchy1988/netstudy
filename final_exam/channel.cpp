@@ -47,7 +47,7 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
         if (channel_ptr->bListen) {
             onConnect(fd,  dispatcher);
         } else {
-
+            utils::read(channel_ptr->fd, channel_ptr->readBuf);
         }
 
         channel_ptr->nReadLimit.store(0, std::memory_order_relaxed);
@@ -68,6 +68,8 @@ void  Channel::onWrite(int fd, EventDispatcher *dispatcher) {
     mapMutex.unlock();
 
     if (channel_ptr->nWriteLimit.fetch_add(1, std::memory_order_relaxed) == 0) {
+
+
         channel_ptr->nWriteLimit.store(0, std::memory_order_relaxed);
     }
 }
