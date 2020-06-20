@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "channel.h"
+#include "utils.h"
 
 std::mutex Channel::mapMutex;
 std::unordered_map<int, std::shared_ptr<Channel>> Channel::channelMap;
@@ -43,14 +44,17 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
     auto channel_ptr = find_iter->second;
     mapMutex.unlock();
 
+    // 保证被唤醒的描述字一次只能被一个线程读取，并且保证在edge trigger下，套接字的缓存被顺利读取、及时读尽
     if (channel_ptr->nReadLimit.fetch_add(1, std::memory_order_relaxed) == 0) {
-        if (channel_ptr->bListen) {
-            onConnect(fd,  dispatcher);
-        } else {
-            utils::read(channel_ptr->fd, channel_ptr->readBuf);
-        }
+        int current_num = channel_ptr->nReadLimit.load(std::memory_order_relaxed);
 
-        channel_ptr->nReadLimit.store(0, std::memory_order_relaxed);
+        do {
+            if (channel_ptr->bListen) {
+                onConnect(fd,  dispatcher);
+            } else {
+                utils::read(channel_ptr->fd, channel_ptr->readBuf);
+            }
+        } while (channel_ptr->nReadLimit.compare_exchange_strong(current_num, 0, std::memory_order_relaxed));
     }
 }
 
