@@ -1,9 +1,10 @@
 #ifndef NET_STUDY_CHANNEL
 #define NET_STUDY_CHANNEL
 
-#include<shared_ptr>
+#include<memory>
 #include<mutex>
 #include<atomic>
+#include<unordered_map>
 
 #include "buffer.h"
 #include "event_dispatcher.h"
@@ -38,7 +39,7 @@ private:
     std::atomic<int> nSendLimit;
 
     static std::mutex mapMutex;
-    static std::unordered_map<int, shared_ptr<Channel>> channelMap;
+    static std::unordered_map<int, std::shared_ptr<Channel>> channelMap;
 };
 
 #endif

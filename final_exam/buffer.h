@@ -1,6 +1,8 @@
 #ifndef NET_STUDY_BUFFER
 #define NET_STUDY_BUFFER
 
+#include <stdlib.h>
+
 class Buffer {
     public:
        Buffer(int _capacity) : capacity(_capacity) {

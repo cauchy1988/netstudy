@@ -7,3 +7,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 include_directories(${PROJECT_SOURCE_DIR})
 
 add_subdirectory(mid_exam)
+add_subdirectory(final_exam)

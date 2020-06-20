@@ -5,7 +5,7 @@
 #include "channel.h"
 
 std::mutex Channel::mapMutex;
-std::unordered_map<int, shared_ptr<Channel>> Channel::channelMap;
+std::unordered_map<int, std::shared_ptr<Channel>> Channel::channelMap;
 
 void  Channel::onConnect(int fd, EventDispatcher *dispatcher) {
     struct sockaddr_in client_addr;
