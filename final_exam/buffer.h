@@ -2,6 +2,7 @@
 #define NET_STUDY_BUFFER
 
 #include <stdlib.h>
+#include <cassert>
 
 class Buffer {
     public:
@@ -58,6 +59,26 @@ class Buffer {
            }
 
            return -1;
+       }
+
+       bool enLarge() {
+           if ((double)(size()) / capacity > 0.67) {
+                char *new_buf = new char[2 * capacity + 1];
+                assert(new_buf);
+                if (frontIdx < rearIdx) {
+                    memcpy((void *)new_buf, (void *)front(), size());
+                } else {
+                    memcpy((void *)new_buf, (void *)front(), preSize());
+                    memcpy((void *)new_buf, (void *)buf, suffixSize());
+                }
+
+
+                rearIdx = size();
+                frontIdx = 0;
+                capacity = capacity * 2;
+           }
+
+           return true;
        }
 
        int readFromBuffer(char *_buf, int len, bool bChange = false);

@@ -52,7 +52,11 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
             if (channel_ptr->bListen) {
                 onConnect(fd,  dispatcher);
             } else {
-                utils::read(channel_ptr->fd, channel_ptr->readBuf);
+                int read_ret = utils::read(channel_ptr->fd, channel_ptr->readBuf);
+                if (read_ret <= 0) {
+                    // cope remainders
+                    return onClose(fd, dispatcher);
+                }
             }
         } while (channel_ptr->nReadLimit.compare_exchange_strong(current_num, 0, std::memory_order_relaxed));
     }
