@@ -57,8 +57,11 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
                     // cope remainders
                     return onClose(fd, dispatcher);
                 }
+
+                // cope with binary to construct possible request
             }
         } while (channel_ptr->nReadLimit.compare_exchange_strong(current_num, 0, std::memory_order_relaxed));
+
     }
 }
 

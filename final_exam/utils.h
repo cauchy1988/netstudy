@@ -3,8 +3,9 @@
 
 #include "buffer.h"
 
-namespace utils {
-    int read(int fd, Buffer buf) {
+class utils {
+public:
+    static int read(int fd, Buffer buf) {
         char local_buf[1024];
         int len = 0;
 
@@ -34,6 +35,6 @@ namespace utils {
            len += write_ret;
         }
     }
-}
+};
 
 #endif
