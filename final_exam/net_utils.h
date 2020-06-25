@@ -1,9 +1,9 @@
-#ifndef NET_STUDY_UTILS
-#define NET_STUDY_UTILS
+#ifndef NET_STUDY_NET_UTILS
+#define NET_STUDY_NET_UTILS
 
 #include "buffer.h"
 
-class utils {
+class net_utils {
 public:
     static int read(int fd, Buffer buf) {
         char local_buf[1024];
@@ -13,7 +13,7 @@ public:
            int read_ret = read(fd, local_buf, 1024);
            if (read_ret < 0) {
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    return len;
+                    return read_ret;
                 } else if (errno == EINTR) {
                     continue;
                 } else {

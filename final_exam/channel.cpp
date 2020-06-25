@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "channel.h"
-#include "utils.h"
+#include "net_utils.h"
 
 std::mutex Channel::mapMutex;
 std::unordered_map<int, std::shared_ptr<Channel>> Channel::channelMap;
@@ -52,8 +52,8 @@ void  Channel::onRead(int fd, EventDispatcher *dispatcher) {
             if (channel_ptr->bListen) {
                 onConnect(fd,  dispatcher);
             } else {
-                int read_ret = utils::read(channel_ptr->fd, channel_ptr->readBuf);
-                if (read_ret <= 0) {
+                int read_ret = net_utils::read(channel_ptr->fd, channel_ptr->readBuf);
+                if (read_ret == 0 || read_ret < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
                     // cope remainders
                     return onClose(fd, dispatcher);
                 }

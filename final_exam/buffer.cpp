@@ -29,6 +29,11 @@ int Buffer::readFromBuffer(char *_buf, int len, bool bChange) {
     return real_size;
 }
 
+
+int Buffer::readFromBufferLine(char *_buf, int len, bool bChange) {
+
+}
+
 int Buffer::writeToBuffer(char *_buf, int len) {
     if (!enLarge()) {
         return -1;

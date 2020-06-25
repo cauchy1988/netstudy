@@ -8,6 +8,7 @@
 
 #include "buffer.h"
 #include "event_dispatcher.h"
+#include "net_utils.h"
 
 struct ChannelMsg {
     int fd;

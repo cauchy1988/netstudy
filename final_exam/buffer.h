@@ -85,6 +85,8 @@ class Buffer {
 
        int writeToBuffer(char *_buf, int len);
 
+       int readFromBufferLine(char *_buf, int len, bool bChange = false);
+
     private:
        char *buf;
        int capacity;
